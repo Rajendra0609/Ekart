@@ -8,14 +8,6 @@ pipeline {
         SCANNER_HOME=tool 'sonarqube'
     }
     stages {
-        stage('Cleanup Workspace') {
-            steps {
-                cleanWs()
-                sh """
-                echo "Cleaned Up Workspace For Project"
-                """
-            }
-        }
         stage('mvn compile') {
             steps{
                 sh 'mvn clean compile'
@@ -141,6 +133,14 @@ pipeline {
                         head: 'dev/docker'
                     )
                 }
+            }
+        }
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+                sh """
+                echo "Cleaned Up Workspace For Project"
+                """
             }
         }
     }
