@@ -117,24 +117,24 @@ pipeline {
             }
     
         }
-        stage('Create Pull Request') {
-            steps {
-                script {
+        //stage('Create Pull Request') {
+            //steps {
+                //script {
                     // Push changes to the 'dev' branch
                     //sh 'git push origin dev/'
                     
                     // Create a pull request on GitHub
-                    githubCreatePullRequest(
-                        repoOwner: 'Rajendra0609',
-                        repoName: 'Ekart',
-                        title: 'Merge dev/docker into main',
-                        body: 'This pull request merges the dev branch into the main branch.',
-                        base: 'main',
-                        head: 'dev/docker'
-                    )
-                }
-            }
-        }
+                    //githubCreatePullRequest(
+                        //repoOwner: 'Rajendra0609',
+                        //repoName: 'Ekart',
+                        //title: 'Merge dev/docker into main',
+                        //body: 'This pull request merges the dev branch into the main branch.',
+                        //base: 'main',
+                        //head: 'dev/docker'
+                    //)
+                //}
+            //}
+        //}
         stage('Cleanup Workspace') {
             steps {
                 cleanWs()
