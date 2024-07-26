@@ -121,7 +121,7 @@ pipeline {
             steps {
                 script {
                     // Push changes to the 'dev' branch
-                    //sh 'git push origin main'
+                    sh 'git push origin main'
                     
                     // Create a pull request on GitHub
                     githubCreatePullRequest(
