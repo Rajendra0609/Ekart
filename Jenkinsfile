@@ -1,17 +1,3 @@
-def COLOUR_MAP = [
-    'FAILURE': 'danger',
-    'SUCCESS': 'good'
-]
-
-// Define a function to send Slack notifications
-def sendSlackNotification(String buildStatus) {
-    slackSend (
-        channel: '#webapplication-ekart', 
-        message: "${buildStatus}: Job ${env.JOB_NAME} \n build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}",
-        color: COLOUR_MAP[buildStatus]
-    )
-}
-
 pipeline {
     agent any
     tools{
@@ -19,15 +5,8 @@ pipeline {
     }
     environment {
         SCANNER_HOME=tool 'sonarqube'
-        SONAR_LOGIN= 'admin'
-        SONAR_PASSWORD= 'raja'
     }
     stages {
-        stage('Checkout from git'){
-            steps{
-                git branch: 'dev/raja', credentialsId: 'github', url: 'https://github.com/Rajendra0609/DevOps-1.git' 
-            }
-        }
         stage('mvn compile') {
             steps{
                 sh 'mvn clean compile'
@@ -53,17 +32,17 @@ pipeline {
                 script {
                     // Run OWASP Dependency Check
                     dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'dpcheck'
-                }
                 
-                // Publish the Dependency Check report
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                archiveArtifacts artifacts: '**/dependency-check-report.html', allowEmptyArchive: true
+                    // Publish the Dependency Check report
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                    archiveArtifacts artifacts: '**/dependency-check-report.html', allowEmptyArchive: true
+                }
             }
         }
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonarqube') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.login=squ_c39a60a4edd92a93550cd4e46e40d83beb96021e -Dsonar.projectName=webapplication_ekart \
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=webapplication_ekart \
                     -Dsonar.java.binaries=. \
                     -Dsonar.projectKey=webapplication_ekart '''
                 }
@@ -109,22 +88,25 @@ pipeline {
         }
         stage('Deploy To localhost') {
             steps {
-              
-                        sh "docker run -d -p 8070:8070 daggu1997/ekart:latest"
+                // Remove all running and stopped containers
+                sh "docker rm -f $(docker ps -aq)"
+
+                // Run the new container
+                sh "docker run -d -p 8070:8070 daggu1997/ekart:latest"
             }
         }
         stage('Verify the Deployment') {
-    steps {
-        sh 'sleep 60' // wait for 5 minutes
-        sh 'docker ps'
-        sh 'echo "Check the file is running"'
-    }
-}
-stage('Nikto Security Scan') {
+            steps {
+                sh 'sleep 60' // wait for 5 minutes
+                sh 'docker ps'
+                sh 'echo "Check the file is running"'
+            }
+        }
+        stage('Nikto Security Scan') {
             steps {
                  script {
                 // Exécuter Nikto et enregistrer la sortie dans nikto-report.html dans le répertoire de travail
-                sh 'nikto -h http://192.168.139.128:8070 -o Nikto-report.html'
+                sh 'nikto -h http://localhost:8070 -o Nikto-report.html'
                     def reportPath = "${WORKSPACE}/Nikto-report.html"
                     echo "Chemin du rapport Nikto : ${reportPath}"
 
@@ -132,7 +114,5 @@ stage('Nikto Security Scan') {
                     archiveArtifacts artifacts:'Nikto-report.html'
             }
         }
-         }
-        }
+    }
 }
-        
