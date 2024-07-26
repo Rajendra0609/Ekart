@@ -32,7 +32,7 @@ pipeline {
             //steps {
                 //script {
                     // Run OWASP Dependency Check
-                 #   //dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'dpcheck'
+                   //dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'dpcheck'
                 
                     // Publish the Dependency Check report
                   //dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
