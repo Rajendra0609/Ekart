@@ -88,18 +88,14 @@ pipeline {
             }
         }
         stage('Deploy To localhost') {
-    steps {
-        // Remove all running and stopped containers if any exist
-        script {
-            def containers = sh(script: "docker ps -aq", returnStdout: true).trim()
-            if (containers) {
-                sh "docker rm -f ${containers}"
-            }
-        }
-
-        // Run the new container
-        sh "docker run -d -p 8070:8070 daggu1997/ekart:latest"
+            steps {
+    // Check if any container is running and stop it
+            script {    
+                    
+            sh "docker run -d -p 8070:8070 daggu1997/ekart:latest"
     }
+}
+    
 }
         stage('Verify the Deployment') {
             steps {
