@@ -1,3 +1,4 @@
+/* groovylint-disable NglParseError */
 pipeline {
     agent any
     tools{
@@ -51,14 +52,14 @@ pipeline {
         stage('Build'){
             steps{
                 sh "mvn package -DskipTests=true "
-        }
+            }
         }
         stage('Build & Tag Docker Image') {
             steps {
                script {
                    withDockerRegistry(credentialsId: 'dockerhub') {
                             sh "docker build -t daggu1997/ekart:latest ."
-                    }
+                   }
                }
             }
         }
@@ -82,13 +83,14 @@ pipeline {
               script {
                   withDockerRegistry(credentialsId: 'dockerhub') {
                             sh "docker push daggu1997/ekart:latest"
-                    }
+                  }
               }
             }
         }
         stage('Deploy To localhost') {
             steps {
                 // Remove all running and stopped containers
+                /* groovylint-disable-next-line NglParseError */
                 sh "docker rm -f $(docker ps -aq)"
 
                 // Run the new container
@@ -104,15 +106,16 @@ pipeline {
         }
         stage('Nikto Security Scan') {
             steps {
-                 script {
-                // Exécuter Nikto et enregistrer la sortie dans nikto-report.html dans le répertoire de travail
-                sh 'nikto -h http://localhost:8070 -o Nikto-report.html'
-                    def reportPath = "${WORKSPACE}/Nikto-report.html"
-                    echo "Chemin du rapport Nikto : ${reportPath}"
-
-                 // Archive le fichier de rapport pour qu'il soit accessible après la construction
-                    archiveArtifacts artifacts:'Nikto-report.html'
+                script {
+            // Exécuter Nikto et enregistrer la sortie dans nikto-report.html dans le répertoire de travail
+            sh 'nikto -h http://localhost:8070 -o Nikto-report.html'
+            def reportPath = "${WORKSPACE}/Nikto-report.html"
+            echo "Chemin du rapport Nikto : ${reportPath}"
+            // Archive le fichier de rapport pour qu'il soit accessible après la construction
+            archiveArtifacts artifacts: 'Nikto-report.html'
+                }
             }
+    
         }
     }
 }
