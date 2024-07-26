@@ -8,6 +8,14 @@ pipeline {
         SCANNER_HOME=tool 'sonarqube'
     }
     stages {
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+                sh """
+                echo "Cleaned Up Workspace For Project"
+                """
+            }
+        }
         stage('mvn compile') {
             steps{
                 sh 'mvn clean compile'
@@ -121,7 +129,7 @@ pipeline {
             steps {
                 script {
                     // Push changes to the 'dev' branch
-                    sh 'git push origin main'
+                    //sh 'git push origin dev/'
                     
                     // Create a pull request on GitHub
                     githubCreatePullRequest(
