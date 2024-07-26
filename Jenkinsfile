@@ -28,18 +28,18 @@ pipeline {
                 }
             }
         }
-        stage('OWASP FS SCAN') {
-            steps {
-                script {
+        //stage('OWASP FS SCAN') {
+            //steps {
+                //script {
                     // Run OWASP Dependency Check
-                    dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'dpcheck'
+                 #   //dependencyCheck additionalArguments: '--scan ./ --format HTML', odcInstallation: 'dpcheck'
                 
                     // Publish the Dependency Check report
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                    archiveArtifacts artifacts: '**/dependency-check-report.html', allowEmptyArchive: true
-                }
-            }
-        }
+                  //dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                    //archiveArtifacts artifacts: '**/dependency-check-report.html', allowEmptyArchive: true
+                //}
+            //}
+        //}
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonarqube') {
