@@ -119,17 +119,24 @@ pipeline {
         }
         stage('Create Pull Request') {
             steps {
-                git branch: 'dev/docker', credentialsId: 'github'
-                git push origin dev
-                githubCreatePullRequest(
-                    repoOwner: 'Rajendra0609',
-                    repoName: 'Ekart',
-                    title: 'Merge dev/docker into main',
-                    body: 'This pull request merges the dev branch into the main branch.',
-                    base: 'main',
-                    head: 'dev/docker'
-                )
+                script {
+                    // Push changes to the 'dev' branch
+                    //sh 'git push origin main'
+                    
+                    // Create a pull request on GitHub
+                    githubCreatePullRequest(
+                        repoOwner: 'Rajendra0609',
+                        repoName: 'Ekart',
+                        title: 'Merge dev/docker into main',
+                        body: 'This pull request merges the dev branch into the main branch.',
+                        base: 'main',
+                        head: 'dev/docker'
+                    )
+                }
             }
         }
+    }
+}
+
     }
 }
